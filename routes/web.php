@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +25,5 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login.s
 Route::middleware(['auth'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-    Route::get('/dashboard', function () {
-        return view('layouts.index');
-    });
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });

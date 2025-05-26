@@ -9,7 +9,7 @@
 <!-- endbuild -->
 
 <!-- Vendors JS -->
-<script src="{{ asset('sneat/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+{{-- <script src="{{ asset('sneat/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script> --}}
 
 <!-- Main JS -->
 <script src="{{ asset('sneat/assets/js/main.js') }}"></script>
@@ -19,5 +19,7 @@
 
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 @stack('scripts')

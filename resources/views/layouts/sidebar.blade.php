@@ -57,7 +57,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
+            <a href="{{ route('schedules.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-calendar-alt"></i>
                 <div data-i18n="Boxicons">Jadwal Dokter</div>
             </a>

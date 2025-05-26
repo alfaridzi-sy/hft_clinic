@@ -78,7 +78,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('appointment_service', function (Blueprint $table) {
+        Schema::create('appointment_services', function (Blueprint $table) {
             $table->id();
             $table->foreignId('appointment_id')->constrained()->onDelete('cascade');
             $table->foreignId('service_id')->constrained()->onDelete('cascade');

@@ -50,7 +50,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
+            <a href="{{ route('doctors.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-layer-plus"></i>
                 <div data-i18n="Boxicons">Dokter</div>
             </a>

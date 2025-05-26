@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\DoctorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,4 +36,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('services', ServiceController::class);
 
     Route::resource('patients', PatientController::class);
+
+    Route::resource('doctors', DoctorController::class);
 });

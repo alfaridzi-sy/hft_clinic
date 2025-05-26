@@ -2,14 +2,14 @@
 @section('page_title', 'Manajemen Pengguna')
 
 @section('content')
-    <div class="container-xxl">
-        <h4 class="fw-bold py-3 mb-4">Manajemen Pengguna</h4>
-
-        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#userModal" onclick="openAdd()">Tambah
-            Pengguna</button>
-
+    <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card">
-            <h5 class="card-header">Daftar Pengguna</h5>
+            <h4 class="card-header d-flex justify-content-between align-items-center">
+                <span>Manajemen Pengguna</span>
+                <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#userModal"
+                    onclick="openAdd()">Tambah
+                    Pengguna</button>
+            </h4>
             <div class="table-responsive text-nowrap">
                 <table class="table">
                     <thead>
@@ -68,54 +68,53 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    @include('users.modal')
-@endsection
+        @include('users.modal')
+    @endsection
 
-@push('scripts')
-    <script>
-        function openAdd() {
-            $('#userForm')[0].reset();
-            $('#userId').val('');
-            $('#userModalLabel').text('Tambah Pengguna');
-        }
-
-        function openEdit(user) {
-            $('#userId').val(user.id);
-            $('#name').val(user.name);
-            $('#username').val(user.username);
-            $('#role').val(user.role);
-            $('#userModalLabel').text('Edit Pengguna');
-            $('#userModal').modal('show');
-        }
-
-        $('#userForm').on('submit', function(e) {
-            e.preventDefault();
-            const id = $('#userId').val();
-            const url = id ? `/users/${id}` : '/users';
-            const method = id ? 'PUT' : 'POST';
-
-            $.ajax({
-                url: url,
-                method: method,
-                data: $('#userForm').serialize(),
-                success: res => location.reload(),
-                error: err => alert('Terjadi kesalahan.')
-            });
-        });
-
-        function deleteUser(id) {
-            if (confirm("Yakin ingin menghapus pengguna ini?")) {
-                $.ajax({
-                    url: `/users/${id}`,
-                    method: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: res => location.reload()
-                });
+    @push('scripts')
+        <script>
+            function openAdd() {
+                $('#userForm')[0].reset();
+                $('#userId').val('');
+                $('#userModalLabel').text('Tambah Pengguna');
             }
-        }
-    </script>
-@endpush
+
+            function openEdit(user) {
+                $('#userId').val(user.id);
+                $('#name').val(user.name);
+                $('#username').val(user.username);
+                $('#role').val(user.role);
+                $('#userModalLabel').text('Edit Pengguna');
+                $('#userModal').modal('show');
+            }
+
+            $('#userForm').on('submit', function(e) {
+                e.preventDefault();
+                const id = $('#userId').val();
+                const url = id ? `/users/${id}` : '/users';
+                const method = id ? 'PUT' : 'POST';
+
+                $.ajax({
+                    url: url,
+                    method: method,
+                    data: $('#userForm').serialize(),
+                    success: res => location.reload(),
+                    error: err => alert('Terjadi kesalahan.')
+                });
+            });
+
+            function deleteUser(id) {
+                if (confirm("Yakin ingin menghapus pengguna ini?")) {
+                    $.ajax({
+                        url: `/users/${id}`,
+                        method: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: res => location.reload()
+                    });
+                }
+            }
+        </script>
+    @endpush

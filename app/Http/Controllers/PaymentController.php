@@ -4,54 +4,66 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Payment;
-use App\Models\AppointmentService;
 use Illuminate\Http\Request;
-
 
 class PaymentController extends Controller
 {
-    public function index(Request $request)
+    // Tampilkan daftar appointment selesai dengan detail pembayaran
+    public function finished(Request $request)
     {
-        $date = $request->date ?? now()->toDateString();
-        $appointments = Appointment::with('patient.user', 'services')
-            ->where('status', 'selesai')
-            ->whereDate('appointment_date', $date)
-            ->get();
+        $query = Appointment::with(['patient.user', 'doctor.user', 'payment', 'services'])
+            ->where('status', 'selesai');
 
-        return view('payments.index', compact('appointments', 'date'));
+        if ($request->date) {
+            $query->where('appointment_date', $request->date);
+        }
+
+        $appointments = $query->orderBy('appointment_date', 'desc')->get();
+
+        // Hitung total tagihan per appointment
+        foreach ($appointments as $appointment) {
+            $appointment->total_tagihan = $appointment->services->sum(function ($service) {
+                return $service->price * $service->pivot->quantity;
+            });
+        }
+
+        return view('payments.index', compact('appointments'));
     }
 
-    public function store(Request $request, Appointment $appointment)
+    // Proses pembayaran dan update status
+    public function store(Request $request)
     {
         $request->validate([
-            'method' => 'required',
+            'appointment_id' => 'required|exists:appointments,id',
+            'method' => 'required|in:tunai,transfer,qris,e-wallet',
+            'paid_at' => 'required|date',
         ]);
 
-        $total = $appointment->services->sum(function ($s) {
-            return $s->price;
+        $appointment = Appointment::findOrFail($request->appointment_id);
+
+        $total = $appointment->services->sum(function ($service) {
+            return $service->price * $service->pivot->quantity;
         });
 
-        Payment::create([
-            'appointment_id' => $appointment->id,
-            'total' => $total,
-            'method' => $request->method,
-            'paid_at' => now(),
-        ]);
+        $payment = Payment::updateOrCreate(
+            ['appointment_id' => $appointment->id],
+            [
+                'total' => $total,
+                'method' => $request->method,
+                'paid_at' => $request->paid_at,
+            ]
+        );
 
-        return redirect()->route('payments.index');
+        // Update status appointment menjadi 'paid' (atau sesuai enum/status kamu)
+        $appointment->update(['status' => 'paid']);
+
+        return response()->json(['success' => true]);
     }
 
-    public function addService(Request $request, Appointment $appointment)
+    public function receipt(Appointment $appointment)
     {
-        $request->validate([
-            'service_id' => 'required|exists:services,id'
-        ]);
+        $appointment->load(['patient.user', 'doctor.user', 'payment', 'services']);
 
-        AppointmentService::create([
-            'appointment_id' => $appointment->id,
-            'service_id' => $request->service_id,
-        ]);
-
-        return redirect()->back();
+        return view('payments.receipt', compact('appointment'));
     }
 }

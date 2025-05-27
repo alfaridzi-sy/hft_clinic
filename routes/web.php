@@ -58,4 +58,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/services', [ExaminationController::class, 'addService'])->name('addService');
         Route::delete('/services/{id}', [ExaminationController::class, 'destroy'])->name('deleteService');
     });
+
+    Route::get('/payments/finished', [PaymentController::class, 'finished'])->name('payments.finished');
+    Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('payments/receipt/{appointment}', [PaymentController::class, 'receipt'])->name('payments.receipt');
 });

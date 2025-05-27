@@ -56,7 +56,7 @@ return new class extends Migration
             $table->foreignId('doctor_id')->constrained();
             $table->date('appointment_date');
             $table->time('appointment_time');
-            $table->enum('status', ['dipesan', 'selesai', 'batal'])->default('dipesan');
+            $table->enum('status', ['dipesan', 'selesai', 'batal', 'paid'])->default('dipesan');
             $table->integer('queu_number');
             $table->timestamps();
         });

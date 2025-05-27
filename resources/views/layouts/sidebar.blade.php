@@ -75,7 +75,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
+            <a href="{{ route('payments.finished') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-credit-card-alt"></i>
                 <div data-i18n="Boxicons">Pembayaran</div>
             </a>

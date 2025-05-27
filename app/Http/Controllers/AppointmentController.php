@@ -7,15 +7,20 @@ use App\Models\Appointment;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Doctor;
 use App\Models\Patient;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Appointment::with(['patient.user', 'doctor.user'])->orderBy('appointment_date');
+        $query = Appointment::with(['patient.user', 'doctor.user'])
+            ->orderByDesc('created_at');
+
+        // Filter default: hanya hari ini
         if ($request->filled('date')) {
-            $query->where('appointment_date', $request->date);
+            $query->whereDate('appointment_date', $request->date);
+        } else {
+            $query->whereDate('appointment_date', now()->toDateString());
         }
 
         $appointments = $query->get();

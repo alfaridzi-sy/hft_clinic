@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // PIVOT: appointment_service (pastikan sudah dibuat migrasinya)
-        DB::table('appointment_service')->insert([
+        DB::table('appointment_services')->insert([
             ['appointment_id' => 1, 'service_id' => 1, 'quantity' => 1],
             ['appointment_id' => 2, 'service_id' => 1, 'quantity' => 1],
             ['appointment_id' => 2, 'service_id' => 2, 'quantity' => 1],

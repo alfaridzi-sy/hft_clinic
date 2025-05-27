@@ -8,6 +8,9 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\ExaminationController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,4 +44,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('doctors', DoctorController::class);
 
     Route::resource('schedules', ScheduleController::class);
+
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::post('/appointments/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::get('/appointments/{id}/examine', [AppointmentController::class, 'examine'])->name('appointments.examine');
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('/appointments/{appointment}/print', [AppointmentController::class, 'print'])->name('appointments.print');
 });

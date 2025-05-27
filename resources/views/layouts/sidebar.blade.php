@@ -68,7 +68,7 @@
         </li>
 
         <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
+            <a href="{{ route('appointments.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-add-to-queue"></i>
                 <div data-i18n="Boxicons">Janji Temu</div>
             </a>

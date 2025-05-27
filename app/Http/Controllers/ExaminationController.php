@@ -12,51 +12,54 @@ use Illuminate\Support\Facades\Auth;
 
 class ExaminationController extends Controller
 {
-    public function index()
-    {
-        $doctorId = Doctor::where('user_id', Auth::id())->value('id');
-        $appointments = Appointment::with('patient.user')
-            ->where('doctor_id', $doctorId)
-            ->where('status', 'dipesan')
-            ->get();
-
-        return view('examinations.index', compact('appointments'));
-    }
-
-    public function edit(Appointment $appointment)
+    public function create(Appointment $appointment)
     {
         $services = Service::all();
-        return view('examinations.edit', compact('appointment', 'services'));
+        $selectedServices = AppointmentService::where('appointment_id', $appointment->id)->with('service')->get();
+        return view('medical_records.create', compact('appointment', 'services', 'selectedServices'));
     }
 
-    public function update(Request $request, Appointment $appointment)
+    public function store(Request $request)
     {
         $request->validate([
-            'subjective' => 'required',
-            'objective' => 'required',
-            'assessment' => 'required',
-            'plan' => 'required',
+            'appointment_id' => 'required|exists:appointments,id',
+            'subjective' => 'required|string',
+            'objective' => 'required|string',
+            'assessment' => 'required|string',
+            'plan' => 'required|string',
         ]);
 
-        MedicalRecord::create([
-            'appointment_id' => $appointment->id,
-            'subjective' => $request->subjective,
-            'objective' => $request->objective,
-            'assessment' => $request->assessment,
-            'plan' => $request->plan,
-        ]);
+        $record = MedicalRecord::where('appointment_id', $request->appointment_id)->first();
 
-        // Tambah layanan jika ada
-        if ($request->has('services')) {
-            foreach ($request->services as $serviceId) {
-                AppointmentService::create([
-                    'appointment_id' => $appointment->id,
-                    'service_id' => $serviceId,
-                ]);
-            }
+        if ($record) {
+            $record->update($request->only('subjective', 'objective', 'assessment', 'plan'));
+        } else {
+            MedicalRecord::create($request->all());
         }
 
-        $appointment->update(['status' => 'selesai']);
-        return redirect()->route('examinations.index');
+        return redirect()->route('examinations.create', $request->appointment_id)
+            ->with('success', 'Pemeriksaan berhasil disimpan.');
+    }
+
+    public function addService(Request $request)
+    {
+        $request->validate([
+            'appointment_id' => 'required|exists:appointments,id',
+            'service_id' => 'required|exists:services,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        AppointmentService::create($request->only('appointment_id', 'service_id', 'quantity'));
+
+        return back()->with('success', 'Layanan berhasil ditambahkan.');
+    }
+
+    public function destroy($id)
+    {
+        // Contoh hapus layanan dari pivot atau service
+        $servicePivot = AppointmentService::findOrFail($id);
+        $servicePivot->delete();
+
+        return response()->json(['message' => 'Layanan berhasil dihapus']);
     }
 }

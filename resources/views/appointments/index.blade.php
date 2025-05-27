@@ -56,7 +56,7 @@
                                     @endif
 
                                     @if (($role == 'dokter' || ($role = 'admin')) && $apt->status == 'dipesan')
-                                        <a href="{{ route('appointments.examine', $apt->id) }}"
+                                        <a href="{{ route('examinations.create', $apt->id) }}"
                                             class="btn btn-sm btn-success">Periksa</a>
                                     @endif
                                 </td>

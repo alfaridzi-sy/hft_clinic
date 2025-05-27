@@ -45,9 +45,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('schedules', ScheduleController::class);
 
-    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-    Route::post('/appointments/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
-    Route::get('/appointments/{id}/examine', [AppointmentController::class, 'examine'])->name('appointments.examine');
-    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
-    Route::get('/appointments/{appointment}/print', [AppointmentController::class, 'print'])->name('appointments.print');
+    Route::prefix('appointments')->name('appointments.')->group(function () {
+        Route::get('/', [AppointmentController::class, 'index'])->name('index');
+        Route::post('/', [AppointmentController::class, 'store'])->name('store');
+        Route::post('{id}/cancel', [AppointmentController::class, 'cancel'])->name('cancel');
+        Route::get('{appointment}/print', [AppointmentController::class, 'print'])->name('print');
+    });
+
+    Route::prefix('examinations')->name('examinations.')->group(function () {
+        Route::get('/{appointment}/create', [ExaminationController::class, 'create'])->name('create');
+        Route::post('/', [ExaminationController::class, 'store'])->name('store');
+        Route::post('/services', [ExaminationController::class, 'addService'])->name('addService');
+        Route::delete('/services/{id}', [ExaminationController::class, 'destroy'])->name('deleteService');
+    });
 });

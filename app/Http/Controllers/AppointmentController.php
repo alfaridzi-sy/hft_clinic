@@ -32,8 +32,17 @@ class AppointmentController extends Controller
             if ($doctor) {
                 $query->where('doctor_id', $doctor->id);
             } else {
-                // Jika dokter tidak ditemukan, tampilkan kosong
-                $query->whereRaw('0=1');
+                $query->whereRaw('0=1'); // kosong
+            }
+        }
+
+        // Jika role pasien, batasi hanya appointment miliknya
+        if ($role === 'pasien') {
+            $patient = Patient::where('user_id', $user->id)->first();
+            if ($patient) {
+                $query->where('patient_id', $patient->id);
+            } else {
+                $query->whereRaw('0=1'); // kosong
             }
         }
 

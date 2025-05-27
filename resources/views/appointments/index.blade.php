@@ -61,7 +61,10 @@
                                         </form>
                                     @endif
 
-                                    @if (($role == 'dokter' || $role == 'admin') && $apt->status == 'dipesan')
+                                    @if (
+                                        $role === 'dokter' ||
+                                            ($role === 'admin' && $apt->status === 'dipesan') ||
+                                            ($role === 'pasien' && $apt->patient->user_id == Auth::id()))
                                         <a href="{{ route('examinations.create', $apt->id) }}"
                                             class="btn btn-sm btn-success">Periksa</a>
                                     @endif

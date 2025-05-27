@@ -28,7 +28,7 @@
             </a>
         </li>
 
-        {{-- Menu untuk Admin --}}
+        {{-- Menu untuk Admin dan Dokter --}}
         @if ($role === 'admin' || $role === 'dokter')
             <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Master Data</span>
@@ -48,20 +48,6 @@
                         <div data-i18n="Boxicons">Layanan</div>
                     </a>
                 </li>
-
-                <li class="menu-item {{ request()->routeIs('patients.*') ? 'active' : '' }}">
-                    <a href="{{ route('patients.index') }}" class="menu-link">
-                        <i class="menu-icon tf-icons bx bxs-user-detail"></i>
-                        <div data-i18n="Boxicons">Pasien</div>
-                    </a>
-                </li>
-
-                <li class="menu-item {{ request()->routeIs('schedules.*') ? 'active' : '' }}">
-                    <a href="{{ route('schedules.index') }}" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-calendar-alt"></i>
-                        <div data-i18n="Boxicons">Jadwal Dokter</div>
-                    </a>
-                </li>
             @endif
 
             {{-- Menu Dokter bisa untuk Admin dan Dokter --}}
@@ -73,8 +59,28 @@
             </li>
         @endif
 
-        {{-- Menu untuk Admin dan Resepsionis --}}
-        @if (in_array($role, ['admin', 'resepsionis']))
+        {{-- Menu Pasien untuk Admin dan Pasien --}}
+        @if (in_array($role, ['admin', 'pasien']))
+            <li class="menu-item {{ request()->routeIs('patients.*') ? 'active' : '' }}">
+                <a href="{{ route('patients.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bxs-user-detail"></i>
+                    <div data-i18n="Boxicons">Pasien</div>
+                </a>
+            </li>
+        @endif
+
+        {{-- Jadwal Dokter hanya untuk Admin --}}
+        @if ($role === 'admin')
+            <li class="menu-item {{ request()->routeIs('schedules.*') ? 'active' : '' }}">
+                <a href="{{ route('schedules.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-calendar-alt"></i>
+                    <div data-i18n="Boxicons">Jadwal Dokter</div>
+                </a>
+            </li>
+        @endif
+
+        {{-- Menu Janji Temu & Pembayaran untuk Admin, Resepsionis, dan Pasien --}}
+        @if (in_array($role, ['admin', 'resepsionis', 'pasien']))
             <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Transaksi</span>
             </li>
@@ -94,22 +100,8 @@
             </li>
         @endif
 
-        {{-- Menu untuk Dokter --}}
-        @if ($role === 'dokter')
-            <li class="menu-header small text-uppercase">
-                <span class="menu-header-text">Transaksi</span>
-            </li>
-
-            <li class="menu-item {{ request()->routeIs('appointments.index') ? 'active' : '' }}">
-                <a href="{{ route('appointments.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bxs-add-to-queue"></i>
-                    <div data-i18n="Boxicons">Janji Temu</div>
-                </a>
-            </li>
-        @endif
-
-        {{-- Menu Laporan (bisa disesuaikan lagi aksesnya) --}}
-        @if (in_array($role, ['admin', 'resepsionis']))
+        {{-- Menu Laporan (Admin, Resepsionis, dan Pasien hanya bisa lihat kunjungan) --}}
+        @if (in_array($role, ['admin', 'resepsionis', 'pasien']))
             <li class="menu-header small text-uppercase">
                 <span class="menu-header-text">Laporan</span>
             </li>
@@ -121,13 +113,14 @@
                 </a>
             </li>
 
-            <li class="menu-item">
-                <a href="javascript:void(0)" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-money"></i>
-                    <div data-i18n="Boxicons">Pendapatan</div>
-                </a>
-            </li>
+            @if (in_array($role, ['admin', 'resepsionis']))
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-money"></i>
+                        <div data-i18n="Boxicons">Pendapatan</div>
+                    </a>
+                </li>
+            @endif
         @endif
-
     </ul>
 </aside>

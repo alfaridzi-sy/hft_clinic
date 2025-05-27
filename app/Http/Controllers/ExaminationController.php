@@ -37,8 +37,14 @@ class ExaminationController extends Controller
             MedicalRecord::create($request->all());
         }
 
+        // Update status appointment menjadi 'selesai'
+        $appointment = Appointment::find($request->appointment_id);
+        if ($appointment) {
+            $appointment->update(['status' => 'selesai']);
+        }
+
         return redirect()->route('examinations.create', $request->appointment_id)
-            ->with('success', 'Pemeriksaan berhasil disimpan.');
+            ->with('success', 'Pemeriksaan berhasil disimpan dan status appointment diperbarui.');
     }
 
     public function addService(Request $request)

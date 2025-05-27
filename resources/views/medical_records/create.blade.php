@@ -131,7 +131,8 @@
 
 @push('scripts')
     <!-- jQuery -->
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- select2 -->
@@ -142,6 +143,14 @@
 
     <script>
         $(function() {
+            let activeTab = localStorage.getItem('activeTab');
+            if (activeTab) {
+                let tabTrigger = document.querySelector(`button[data-bs-target="${activeTab}"]`);
+                if (tabTrigger) new bootstrap.Tab(tabTrigger).show();
+
+                // Hapus setelah digunakan agar tidak mengganggu reload berikutnya
+                localStorage.removeItem('activeTab');
+            }
             // Inisialisasi select2
             $('select[name="service_id"]').select2({
                 theme: 'bootstrap-5',
@@ -163,9 +172,25 @@
             // Tambah layanan
             $('#addServiceForm').on('submit', function(e) {
                 e.preventDefault();
+
+                // Simpan tab aktif agar tetap di tab layanan setelah reload
+                localStorage.setItem('activeTab', '#services');
+
                 $.post("{{ route('examinations.addService') }}", $(this).serialize())
-                    .done(() => location.reload())
-                    .fail(() => alert('Gagal menambahkan layanan.'));
+                    .done(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sukses!',
+                            text: 'Layanan berhasil ditambahkan.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    })
+                    .fail(() => {
+                        Swal.fire('Error', 'Gagal menambahkan layanan.', 'error');
+                    });
             });
 
             // Hapus layanan dengan SweetAlert2 confirm
@@ -184,6 +209,8 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
+
+                        localStorage.setItem('activeTab', '#services');
                         $.ajax({
                             url: `/examinations/services/${id}`,
                             method: 'POST',

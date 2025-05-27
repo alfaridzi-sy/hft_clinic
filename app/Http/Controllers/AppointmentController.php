@@ -13,22 +13,40 @@ class AppointmentController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $role = $user->role;
+
         $query = Appointment::with(['patient.user', 'doctor.user'])
             ->orderByDesc('created_at');
 
-        // Filter default: hanya hari ini
+        // Filter default tanggal hari ini
         if ($request->filled('date')) {
             $query->whereDate('appointment_date', $request->date);
         } else {
             $query->whereDate('appointment_date', now()->toDateString());
         }
 
-        $appointments = $query->get();
-        $role = Auth::user()->role;
+        // Jika role dokter, batasi hanya appointment dokter tersebut
+        if ($role === 'dokter') {
+            $doctor = Doctor::where('user_id', $user->id)->first();
+            if ($doctor) {
+                $query->where('doctor_id', $doctor->id);
+            } else {
+                // Jika dokter tidak ditemukan, tampilkan kosong
+                $query->whereRaw('0=1');
+            }
+        }
 
-        // Untuk dropdown form
-        $patients = Patient::with('user')->get();
-        $doctors = Doctor::with(['user', 'schedules'])->get();
+        $appointments = $query->get();
+
+        // Ambil data pasien dan dokter untuk dropdown hanya jika admin/resepsionis
+        $patients = collect();
+        $doctors = collect();
+
+        if (in_array($role, ['admin', 'resepsionis'])) {
+            $patients = Patient::with('user')->get();
+            $doctors = Doctor::with(['user', 'schedules'])->get();
+        }
 
         return view('appointments.index', compact('appointments', 'role', 'patients', 'doctors'));
     }

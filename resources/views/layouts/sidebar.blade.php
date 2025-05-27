@@ -3,7 +3,7 @@
         <a href="{{ route('dashboard') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
                 <img src="{{ asset('sneat/assets/img/hft_clinic_logo.svg') }}" alt="Logo SIM Klinik by Hatta"
-                    width="48">
+                    width="48" />
             </span>
             <span class="app-brand-text demo menu-text fw-bolder ms-2">HFT Clinic</span>
         </a>
@@ -15,88 +15,119 @@
 
     <div class="menu-inner-shadow"></div>
 
+    @php
+        $role = Auth::user()->role ?? '';
+    @endphp
+
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
-        <li class="menu-item active">
+        <li class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <a href="{{ route('dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
             </a>
         </li>
 
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Master Data</span>
-        </li>
+        {{-- Menu untuk Admin --}}
+        @if ($role === 'admin' || $role === 'dokter')
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Master Data</span>
+            </li>
 
-        <li class="menu-item">
-            <a href="{{ route('users.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-user-account"></i>
-                <div data-i18n="Boxicons">Pengguna</div>
-            </a>
-        </li>
+            @if ($role === 'admin')
+                <li class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                    <a href="{{ route('users.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bxs-user-account"></i>
+                        <div data-i18n="Boxicons">Pengguna</div>
+                    </a>
+                </li>
 
-        <li class="menu-item">
-            <a href="{{ route('services.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-server"></i>
-                <div data-i18n="Boxicons">Layanan</div>
-            </a>
-        </li>
+                <li class="menu-item {{ request()->routeIs('services.*') ? 'active' : '' }}">
+                    <a href="{{ route('services.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-server"></i>
+                        <div data-i18n="Boxicons">Layanan</div>
+                    </a>
+                </li>
 
-        <li class="menu-item">
-            <a href="{{ route('patients.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-user-detail"></i>
-                <div data-i18n="Boxicons">Pasien</div>
-            </a>
-        </li>
+                <li class="menu-item {{ request()->routeIs('patients.*') ? 'active' : '' }}">
+                    <a href="{{ route('patients.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bxs-user-detail"></i>
+                        <div data-i18n="Boxicons">Pasien</div>
+                    </a>
+                </li>
 
-        <li class="menu-item">
-            <a href="{{ route('doctors.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-layer-plus"></i>
-                <div data-i18n="Boxicons">Dokter</div>
-            </a>
-        </li>
+                <li class="menu-item {{ request()->routeIs('schedules.*') ? 'active' : '' }}">
+                    <a href="{{ route('schedules.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-calendar-alt"></i>
+                        <div data-i18n="Boxicons">Jadwal Dokter</div>
+                    </a>
+                </li>
+            @endif
 
-        <li class="menu-item">
-            <a href="{{ route('schedules.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-calendar-alt"></i>
-                <div data-i18n="Boxicons">Jadwal Dokter</div>
-            </a>
-        </li>
+            {{-- Menu Dokter bisa untuk Admin dan Dokter --}}
+            <li class="menu-item {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
+                <a href="{{ route('doctors.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bxs-layer-plus"></i>
+                    <div data-i18n="Boxicons">Dokter</div>
+                </a>
+            </li>
+        @endif
 
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Transaksi</span>
-        </li>
+        {{-- Menu untuk Admin dan Resepsionis --}}
+        @if (in_array($role, ['admin', 'resepsionis']))
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Transaksi</span>
+            </li>
 
-        <li class="menu-item">
-            <a href="{{ route('appointments.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-add-to-queue"></i>
-                <div data-i18n="Boxicons">Janji Temu</div>
-            </a>
-        </li>
+            <li class="menu-item {{ request()->routeIs('appointments.*') ? 'active' : '' }}">
+                <a href="{{ route('appointments.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bxs-add-to-queue"></i>
+                    <div data-i18n="Boxicons">Janji Temu</div>
+                </a>
+            </li>
 
-        <li class="menu-item">
-            <a href="{{ route('payments.finished') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-credit-card-alt"></i>
-                <div data-i18n="Boxicons">Pembayaran</div>
-            </a>
-        </li>
+            <li class="menu-item {{ request()->routeIs('payments.finished') ? 'active' : '' }}">
+                <a href="{{ route('payments.finished') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-credit-card-alt"></i>
+                    <div data-i18n="Boxicons">Pembayaran</div>
+                </a>
+            </li>
+        @endif
 
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Laporan</span>
-        </li>
+        {{-- Menu untuk Dokter --}}
+        @if ($role === 'dokter')
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Transaksi</span>
+            </li>
 
-        <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-spreadsheet"></i>
-                <div data-i18n="Boxicons">Kunjungan</div>
-            </a>
-        </li>
+            <li class="menu-item {{ request()->routeIs('appointments.index') ? 'active' : '' }}">
+                <a href="{{ route('appointments.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bxs-add-to-queue"></i>
+                    <div data-i18n="Boxicons">Janji Temu</div>
+                </a>
+            </li>
+        @endif
 
-        <li class="menu-item">
-            <a href="javascript:void(0)" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-money"></i>
-                <div data-i18n="Boxicons">Pendapatan</div>
-            </a>
-        </li>
+        {{-- Menu Laporan (bisa disesuaikan lagi aksesnya) --}}
+        @if (in_array($role, ['admin', 'resepsionis']))
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">Laporan</span>
+            </li>
+
+            <li class="menu-item">
+                <a href="javascript:void(0)" class="menu-link">
+                    <i class="menu-icon tf-icons bx bxs-spreadsheet"></i>
+                    <div data-i18n="Boxicons">Kunjungan</div>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <a href="javascript:void(0)" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-money"></i>
+                    <div data-i18n="Boxicons">Pendapatan</div>
+                </a>
+            </li>
+        @endif
+
     </ul>
 </aside>

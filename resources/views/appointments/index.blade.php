@@ -25,6 +25,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th>Antrian</th>
                             <th>Tanggal</th>
                             <th>Waktu</th>
                             <th>Pasien</th>
@@ -36,6 +37,10 @@
                     <tbody>
                         @foreach ($appointments as $apt)
                             <tr>
+                                <td>
+                                    {{ strtoupper(Str::limit(preg_replace('/[^A-Za-z]/', '', $apt->doctor->user->name), 3, '')) }}
+                                    -{{ str_pad($apt->queu_number, 3, '0', STR_PAD_LEFT) }}
+                                </td>
                                 <td>{{ $apt->appointment_date }}</td>
                                 <td>{{ $apt->appointment_time }}</td>
                                 <td>{{ $apt->patient->user->name ?? '-' }}</td>
@@ -47,15 +52,16 @@
                                     </span>
                                 </td>
                                 <td>
-                                    @if (($role == 'resepsionis' || ($role = 'admin')) && $apt->status == 'dipesan')
+                                    @if (($role == 'resepsionis' || $role == 'admin') && $apt->status == 'dipesan')
                                         <form action="{{ route('appointments.cancel', $apt->id) }}" method="POST"
-                                            style="display:inline;">
+                                            class="cancel-form" style="display:inline;">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-danger">Batalkan</button>
+                                            <button type="button"
+                                                class="btn btn-sm btn-danger btn-cancel">Batalkan</button>
                                         </form>
                                     @endif
 
-                                    @if (($role == 'dokter' || ($role = 'admin')) && $apt->status == 'dipesan')
+                                    @if (($role == 'dokter' || $role == 'admin') && $apt->status == 'dipesan')
                                         <a href="{{ route('examinations.create', $apt->id) }}"
                                             class="btn btn-sm btn-success">Periksa</a>
                                     @endif
@@ -156,6 +162,26 @@
                     }
                 });
             }
+        });
+
+        $(document).on('click', '.btn-cancel', function(e) {
+            e.preventDefault();
+            const form = $(this).closest('form');
+
+            Swal.fire({
+                title: 'Konfirmasi Pembatalan',
+                text: "Apakah Anda yakin ingin membatalkan appointment ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     </script>
 @endpush

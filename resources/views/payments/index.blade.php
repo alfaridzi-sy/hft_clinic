@@ -26,7 +26,7 @@
                             <th>Pasien</th>
                             <th>Dokter</th>
                             <th>Status</th>
-                            <th>Total Tagihan</th> {{-- Tambah ini --}}
+                            <th>Total Tagihan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>

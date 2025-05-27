@@ -12,7 +12,7 @@ class PaymentController extends Controller
     public function finished(Request $request)
     {
         $query = Appointment::with(['patient.user', 'doctor.user', 'payment', 'services'])
-            ->where('status', 'selesai');
+            ->whereIn('status', ['selesai', 'paid']);
 
         if ($request->date) {
             $query->where('appointment_date', $request->date);
